@@ -4,6 +4,130 @@
 		"selected_items":
 		[
 			[
+				"main",
+				"uv_MainTex"
+			],
+			[
+				"tex",
+				"TEXCOORD0"
+			],
+			[
+				"sample",
+				"sample_rate"
+			],
+			[
+				"float",
+				"float32"
+			],
+			[
+				"sam",
+				"sample_verts"
+			],
+			[
+				"freq",
+				"freq_max_"
+			],
+			[
+				"wa",
+				"WMAX"
+			],
+			[
+				"w",
+				"WMAX"
+			],
+			[
+				"vba",
+				"vbao_spec"
+			],
+			[
+				"glBuffer",
+				"glBufferSubData"
+			],
+			[
+				"vb",
+				"vbao_wave"
+			],
+			[
+				"glbin",
+				"glBindBuffer"
+			],
+			[
+				"tex_",
+				"tex_freq"
+			],
+			[
+				"note",
+				"note_keys"
+			],
+			[
+				"KEY",
+				"KEYDOWN"
+			],
+			[
+				"sa",
+				"sample_count"
+			],
+			[
+				"sampl",
+				"samplerate"
+			],
+			[
+				"fre",
+				"FREQ_MAXIMUM"
+			],
+			[
+				"samples",
+				"samples_amp"
+			],
+			[
+				"Tex",
+				"TEX_WMAX"
+			],
+			[
+				"samp",
+				"samples"
+			],
+			[
+				"fft",
+				"fftpack"
+			],
+			[
+				"note_",
+				"note_keys"
+			],
+			[
+				"data",
+				"data_pp"
+			],
+			[
+				"dev",
+				"device_out"
+			],
+			[
+				"as",
+				"astype"
+			],
+			[
+				"samples_",
+				"samples_freq"
+			],
+			[
+				"gl_tex",
+				"GL_TEXTURE_1D"
+			],
+			[
+				"glbind",
+				"glBindTexture"
+			],
+			[
+				"glBind",
+				"glBindTexture"
+			],
+			[
+				"FRAC",
+				"FRAG_SRC"
+			],
+			[
 				"inpu",
 				"input_device"
 			],
@@ -26,10 +150,6 @@
 			[
 				"clear",
 				"clearColor"
-			],
-			[
-				"tex_",
-				"tex_depth_front"
 			],
 			[
 				"depth",
@@ -82,10 +202,6 @@
 			[
 				"frag",
 				"fragmentShader"
-			],
-			[
-				"tex",
-				"textureCube"
 			],
 			[
 				"canv",
@@ -398,67 +514,9 @@
 			[
 				"fsh",
 				"fshsrc"
-			],
-			[
-				"at",
-				"attribs"
-			],
-			[
-				"_F",
-				"_fsq_vao"
-			],
-			[
-				"INIT",
-				"INIT_QUEUE"
-			],
-			[
-				"proto",
-				"prototype"
-			],
-			[
-				"prot",
-				"prototype"
-			],
-			[
-				"back",
-				"background-color"
-			],
-			[
-				"GL",
-				"GLCanvas"
-			],
-			[
-				"ba",
-				"background-color"
-			],
-			[
-				"st",
-				"style\tTag"
 			]
 		]
 	},
-	"buffers":
-	[
-		{
-			"file": "/C/Users/John/Desktop/cube",
-			"settings":
-			{
-				"buffer_size": 7151,
-				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "main.py",
-			"settings":
-			{
-				"buffer_size": 658,
-				"encoding": "UTF-8",
-				"line_ending": "Windows",
-				"name": "import * from sounddevice"
-			}
-		}
-	],
 	"build_system": "Packages/Python/Python.sublime-build",
 	"build_system_choices":
 	[
@@ -603,6 +661,10 @@
 		"selected_items":
 		[
 			[
+				"packag",
+				"Package Control: Install Package"
+			],
+			[
 				"can",
 				"Build: Cancel"
 			],
@@ -658,6 +720,7 @@
 		"height": 292.0,
 		"history":
 		[
+			"import numpy",
 			"quit",
 			"quit()",
 			"return",
@@ -708,11 +771,37 @@
 	},
 	"file_history":
 	[
-		"/C/Users/John/Downloads/wire.py",
 		"/C/Users/John/Desktop/meditations.txt",
+		"/C/Users/John/Desktop/brill/src/shaders/diamond.frag.glsl",
+		"/C/Users/John/Desktop/todo.txt",
+		"/C/Users/John/Desktop/apotheosis/tech.txt",
+		"/C/Users/John/Desktop/Unity/vrc/vrc/Assets/cube_inf.cginc",
+		"/C/Program Files/Unity/Hub/Editor/2018.4.21f1/Editor/Data/CGIncludes/UnityCG.cginc",
+		"/C/Users/John/vrc/Assets/gaccy_cloth.shader",
+		"/C/Users/John/Desktop/Unity/vrc/vrc/Assets/cube_inf_acolyte.shader",
 		"/C/Users/John/Desktop/dreams.txt",
-		"/C/Users/John/AppData/Roaming/Blender Foundation/Blender/2.82/scripts/addons/sverchok-master/docs/nodes/vector/homogenous_vector_field.rst",
+		"/C/Users/John/Desktop/inventions.txt",
+		"/C/Users/John/Desktop/Unity/vrc/vrc/Assets/cube_inf - Copy.shader",
+		"/C/Users/John/Desktop/prog/cubesong/main.sublime-workspace",
+		"/C/Users/John/Desktop/prog/cubesong/main.sublime-project",
+		"/C/Users/John/Desktop/lenia/Lenia/Python/requirements.txt",
+		"/C/Users/John/Desktop/apotheosis/ideas.txt",
+		"/C/Users/John/Desktop/prog/cubesong/singen.py",
+		"/C/Users/John/Desktop/prog/cubesong/vis.py",
+		"/C/Python38/Lib/site-packages/pygame/tests/event_test.py",
+		"/C/Python38/Lib/site-packages/pygame/event.cp38-win_amd64.pyd",
+		"/C/Users/John/Desktop/prog/cubesong/keyboard.py",
+		"/C/Users/John/Desktop/prog/cubesong/input.py",
+		"/C/Users/John/Desktop/cover_applied_minds.txt",
+		"/C/Users/John/Desktop/apotheosis/quote heap.txt",
 		"/C/Users/John/Desktop/cube",
+		"/C/Users/John/Desktop/prog/cubesong/pirate-spectrogram.py",
+		"/C/Users/John/Desktop/prog/cubesong/.gitignore",
+		"/C/Users/John/Desktop/rants.txt",
+		"/C/Users/John/Desktop/prog/cubesong/gl.py",
+		"/C/Users/John/Downloads/Magic.cs",
+		"/C/Users/John/Downloads/wire.py",
+		"/C/Users/John/AppData/Roaming/Blender Foundation/Blender/2.82/scripts/addons/sverchok-master/docs/nodes/vector/homogenous_vector_field.rst",
 		"/C/Program Files (x86)/Steam/steamapps/common/King Arthur's Gold/Mods/TFlippy_TerritoryControl_Structures_v128/Entities/Structures/DrugLab/DrugLab.as",
 		"/C/Users/John/Desktop/f.txt",
 		"/C/Users/John/Desktop/hints.txt",
@@ -730,15 +819,10 @@
 		"/C/Program Files (x86)/Steam/steamapps/common/King Arthur's Gold/Mods/TFlippy_TerritoryControl_Characters_v129/Entities/NPC/Hoob/Hoob.cfg",
 		"/C/Program Files (x86)/Steam/steamapps/common/King Arthur's Gold/Mods/TFlippy_TerritoryControl_Characters_v129/Entities/NPC/Hoob/HoobBrain.as",
 		"/C/Users/John/Desktop/apotheosis/fables.txt",
-		"/C/Users/John/Desktop/apotheosis/ideas.txt",
-		"/C/Users/John/Desktop/apotheosis/quote heap.txt",
 		"/C/Program Files (x86)/Steam/steamapps/common/King Arthur's Gold/Mods/TFlippy_TerritoryControl_Items_v129/Entities/Items/Drugs/Schisk/Schisked.as",
 		"/C/Program Files (x86)/Steam/steamapps/common/King Arthur's Gold/Mods/TFlippy_TerritoryControl_Items_v129/Entities/Items/Drugs/Schisk/Schisk.as",
 		"/C/Users/John/Desktop/resume_john_sherrill.txt",
-		"/C/Users/John/Desktop/cover_applied_minds.txt",
-		"/C/Users/John/Desktop/rants.txt",
 		"/C/Users/John/Desktop/timesheet.txt",
-		"/C/Users/John/Desktop/brill/src/shaders/diamond.frag.glsl",
 		"/C/Users/John/Desktop/brill/src/shaders/inclusion.vert.glsl",
 		"/C/Users/John/Desktop/brill/src/DepthShell.js",
 		"/C/Users/John/Desktop/brill/src/shaders/diamond.vert.glsl",
@@ -773,7 +857,6 @@
 		"/C/Users/John/Desktop/brill/node_modules/three/src/renderers/webgl/WebGLMultiview.js",
 		"/C/Users/John/Desktop/brill/node_modules/three/src/renderers/webgl/WebGLRenderLists.js",
 		"/C/Users/John/Desktop/brill/node_modules/three/src/renderers/WebGLRenderTarget.d.ts",
-		"/C/Users/John/Desktop/todo.txt",
 		"/C/Users/John/Desktop/video ideas.txt",
 		"/C/Users/John/Desktop/brill/src/index.js",
 		"/C/Users/John/Desktop/brill/src/shaders/diamond0.vert.glsl",
@@ -789,7 +872,6 @@
 		"/C/Users/John/Desktop/web/fancy.js",
 		"/C/Users/John/Documents/gameshow.txt",
 		"/C/Users/John/Desktop/brill/node_modules/three/build/three.module.js",
-		"/C/Users/John/Desktop/apotheosis/tech.txt",
 		"/C/Users/John/Desktop/hs speech.txt",
 		"/C/Users/John/Desktop/brill/node_modules/three/build/three.js",
 		"/C/Users/John/Desktop/brill/node_modules/three/examples/jsm/shaders/PixelShader.js",
@@ -816,26 +898,7 @@
 		"/C/Users/John/Desktop/brill/node_modules/three/examples/jsm/postprocessing/HalftonePass.js",
 		"/C/Users/John/Documents/tempsavcap - Copy.txt",
 		"/C/Users/John/Desktop/master.py",
-		"/C/Program Files (x86)/Steam/steamapps/common/King Arthur's Gold/Mods/TFlippy_TerritoryControl_Structures_v129/Entities/Structures/DrugLab/DrugLab.as",
-		"/C/Users/John/Desktop/brill/config-overrides.js",
-		"/C/Users/John/Desktop/brill/src/shaders/shader.glsl",
-		"/C/Users/John/Desktop/brill/src/Shader.js",
-		"/C/Users/John/AppData/Local/Temp/4eghcd0n.kpk/resources/app/NOTICE.txt",
-		"/C/Users/John/Desktop/cpp/TI/src/component.hpp",
-		"/C/Users/John/Desktop/cpp/TI/src/client/render.hpp",
-		"/C/Users/John/Desktop/cpp/TI/src/client/render_pipe.impl.hpp",
-		"/C/Users/John/Desktop/db.py",
-		"/C/Users/John/Desktop/apotheosis/characters.txt",
-		"/C/Users/John/Desktop/cpp/TI/src/doot/hash.hpp",
-		"/C/Users/John/Desktop/inventions.txt",
-		"/C/Users/John/Documents/resume_john_sherrill.txt",
-		"/C/Users/John/Downloads/resume_john_sherrill.txt",
-		"/C/Users/John/Desktop/Unity/vrc/vrc/Assets/cube_inf.cginc",
-		"/C/Users/John/Desktop/cpp/TI/docs/gameplay.txt",
-		"/C/Users/John/Desktop/Unity/vrc/vrc/Assets/cube_inf_acolyte.shader",
-		"/C/Users/John/Desktop/lecture.txt",
-		"/C/Users/John/Desktop/Unity/vrc/vrc/Assets/mesh.cs",
-		"/C/Users/John/Desktop/Unity/vrc/vrc/Assets/khlor_header.cginc"
+		"/C/Program Files (x86)/Steam/steamapps/common/King Arthur's Gold/Mods/TFlippy_TerritoryControl_Structures_v129/Entities/Structures/DrugLab/DrugLab.as"
 	],
 	"find":
 	{
@@ -857,6 +920,50 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"UNITY_MATRIX_VP",
+			"##",
+			"initialize_out",
+			"if\\(",
+			"    ",
+			"wma",
+			"TEX_WMAX",
+			"wmax",
+			"tex_",
+			"data",
+			"    ",
+			"samplerate",
+			" $",
+			" *\\n",
+			"    ",
+			"fft",
+			",",
+			"'",
+			"\\'",
+			"\\w,",
+			"\\n",
+			"key",
+			"key ",
+			"scanc",
+			"\\n",
+			"up",
+			".",
+			"    ",
+			".",
+			"\\{",
+			",\\(",
+			".",
+			"4",
+			"unclea",
+			"TEX_MAXW",
+			"high",
+			"uniform",
+			"call",
+			"    ",
+			"tex",
+			"0",
+			"division",
+			"self",
+			"print",
 			"    ",
 			"none",
 			"sample",
@@ -940,51 +1047,7 @@
 			"new Ca",
 			"new cam",
 			"controls",
-			"THREE\\.",
-			"THREE.",
-			"mesh",
-			"mesh_",
-			"gl",
-			"debug",
-			"stencil",
-			"!!",
-			"inclusion",
-			"camera",
-			"gltf",
-			".rgb",
-			"env",
-			"background",
-			"env",
-			"\\n",
-			".",
-			"-",
-			"+",
-			"(",
-			"(.){2}",
-			"\\W",
-			".",
-			"..",
-			".",
-			":",
-			".",
-			"},\n",
-			"uniforms",
-			"rendertarget",
-			"direction",
-			"lowpass",
-			"!!",
-			"targets",
-			"rendertarge",
-			"invsiz",
-			"\",\"",
-			",",
-			"exposure",
-			"seek",
-			"_ass",
-			"inclus",
-			"log",
-			"#if",
-			"ifdef"
+			"THREE\\."
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -999,75 +1062,9 @@
 		"whole_word": false,
 		"wrap": true
 	},
-	"groups":
-	[
-		{
-			"selected": 1,
-			"sheets":
-			[
-				{
-					"buffer": 0,
-					"file": "/C/Users/John/Desktop/cube",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 7151,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								7130,
-								7130
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 3369.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "main.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 658,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								658,
-								658
-							]
-						],
-						"settings":
-						{
-							"auto_name": "import * from sounddevice",
-							"syntax": "Packages/Python/Python.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				}
-			]
-		}
-	],
 	"incremental_find":
 	{
-		"height": 22.0
+		"height": 24.0
 	},
 	"input":
 	{
@@ -1082,11 +1079,18 @@
 				0,
 				1,
 				1
+			],
+			[
+				1,
+				0,
+				2,
+				1
 			]
 		],
 		"cols":
 		[
 			0.0,
+			0.490681421083,
 			1.0
 		],
 		"rows":
@@ -1104,11 +1108,14 @@
 	{
 		"height": 0.0
 	},
+	"output.help":
+	{
+		"height": 92.0
+	},
 	"pinned_build_system": "Packages/Python/Python.sublime-build",
-	"project": "main.sublime-project",
 	"replace":
 	{
-		"height": 64.0
+		"height": 44.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -1166,7 +1173,6 @@
 		],
 		"width": 0.0
 	},
-	"selected_group": 0,
 	"settings":
 	{
 	},

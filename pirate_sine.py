@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """Play a sine signal."""
 import argparse
 import sys
@@ -37,7 +38,7 @@ parser.add_argument(
     help='amplitude (default: %(default)s)')
 args = parser.parse_args(remaining)
 
-start_idx = 0
+start_time = 0
 
 try:
     samplerate = sd.query_devices(args.device, 'output')['default_samplerate']
@@ -53,6 +54,11 @@ try:
 
     with sd.OutputStream(device=args.device, channels=1, callback=callback,
                          samplerate=samplerate):
-        None;
-except Exception as e: None;
-input()
+        print('#' * 80)
+        print('press Return to quit')
+        print('#' * 80)
+        input()
+except KeyboardInterrupt:
+    parser.exit('')
+except Exception as e:
+    parser.exit(type(e).__name__ + ': ' + str(e))
