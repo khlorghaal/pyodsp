@@ -13,14 +13,14 @@ class prog:
 	def bind():
 		glUseProgram(self.id)
 
-def prog_vf(vert,frag):
-	vert= "#version 450\n"+vert
-	frag= "#version 450\n"+frag
-	p= prog()
-	vert= shaders.compileShader(vert, GL_VERTEX_SHADER)
-	frag= shaders.compileShader(frag, GL_FRAGMENT_SHADER)
-	p.id= shaders.compileProgram(vert,frag)
-	return p
+class prog_vf(prog):
+	def __init__(self, vert,frag):
+		super(prog,self).__init__()
+		self.vert= "#version 450\n"+vert
+		self.frag= "#version 450\n"+frag
+		self.vert= shaders.compileShader(vert, GL_VERTEX_SHADER)
+		self.frag= shaders.compileShader(frag, GL_FRAGMENT_SHADER)
+		self.id=   shaders.compileProgram(vert,frag)
 
 class vbao:
 	vbo= -1
@@ -30,7 +30,7 @@ class vbao:
 	def __init__(self):
 		self.vao= glGenVertexArrays(1)
 		self.vbo= glGenBuffers(1)
-	def bind(self):
+	def bind_vbo(self):
 		glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
 	def draw(self):
 		glBindVertexArray(self.vao)

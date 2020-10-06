@@ -771,33 +771,41 @@
 	},
 	"file_history":
 	[
+		"/C/Users/John/Desktop/lenia/JavaScript/Lenia.html",
+		"/C/Users/John/Desktop/rants.txt",
 		"/C/Users/John/Desktop/meditations.txt",
+		"/C/Users/John/Desktop/apotheosis/insults.txt",
+		"/C/Users/John/Desktop/resume_john_sherrill.txt",
+		"/C/Users/John/Desktop/apotheosis/moon law.txt",
+		"/C/Users/John/Desktop/cube.txt",
+		"/C/Users/John/Desktop/prog/cubesong/com.py",
+		"/C/Users/John/Desktop/prog/cubesong/vis.py",
+		"/C/Users/John/Desktop/prog/cubesong/<__array_function__ internals>",
+		"/C/Users/John/Desktop/apotheosis/moonspeak.txt",
+		"/C/Users/John/Desktop/apotheosis/quote heap.txt",
+		"/C/Users/John/Desktop/inventions.txt",
+		"/C/Users/John/Desktop/prog/cubesong/keyboard.py",
+		"/C/Users/John/Desktop/apotheosis/tech.txt",
+		"/C/Users/John/Desktop/dreams.txt",
 		"/C/Users/John/Desktop/brill/src/shaders/diamond.frag.glsl",
 		"/C/Users/John/Desktop/todo.txt",
-		"/C/Users/John/Desktop/apotheosis/tech.txt",
 		"/C/Users/John/Desktop/Unity/vrc/vrc/Assets/cube_inf.cginc",
 		"/C/Program Files/Unity/Hub/Editor/2018.4.21f1/Editor/Data/CGIncludes/UnityCG.cginc",
 		"/C/Users/John/vrc/Assets/gaccy_cloth.shader",
 		"/C/Users/John/Desktop/Unity/vrc/vrc/Assets/cube_inf_acolyte.shader",
-		"/C/Users/John/Desktop/dreams.txt",
-		"/C/Users/John/Desktop/inventions.txt",
 		"/C/Users/John/Desktop/Unity/vrc/vrc/Assets/cube_inf - Copy.shader",
 		"/C/Users/John/Desktop/prog/cubesong/main.sublime-workspace",
 		"/C/Users/John/Desktop/prog/cubesong/main.sublime-project",
 		"/C/Users/John/Desktop/lenia/Lenia/Python/requirements.txt",
 		"/C/Users/John/Desktop/apotheosis/ideas.txt",
 		"/C/Users/John/Desktop/prog/cubesong/singen.py",
-		"/C/Users/John/Desktop/prog/cubesong/vis.py",
 		"/C/Python38/Lib/site-packages/pygame/tests/event_test.py",
 		"/C/Python38/Lib/site-packages/pygame/event.cp38-win_amd64.pyd",
-		"/C/Users/John/Desktop/prog/cubesong/keyboard.py",
 		"/C/Users/John/Desktop/prog/cubesong/input.py",
 		"/C/Users/John/Desktop/cover_applied_minds.txt",
-		"/C/Users/John/Desktop/apotheosis/quote heap.txt",
 		"/C/Users/John/Desktop/cube",
 		"/C/Users/John/Desktop/prog/cubesong/pirate-spectrogram.py",
 		"/C/Users/John/Desktop/prog/cubesong/.gitignore",
-		"/C/Users/John/Desktop/rants.txt",
 		"/C/Users/John/Desktop/prog/cubesong/gl.py",
 		"/C/Users/John/Downloads/Magic.cs",
 		"/C/Users/John/Downloads/wire.py",
@@ -821,7 +829,6 @@
 		"/C/Users/John/Desktop/apotheosis/fables.txt",
 		"/C/Program Files (x86)/Steam/steamapps/common/King Arthur's Gold/Mods/TFlippy_TerritoryControl_Items_v129/Entities/Items/Drugs/Schisk/Schisked.as",
 		"/C/Program Files (x86)/Steam/steamapps/common/King Arthur's Gold/Mods/TFlippy_TerritoryControl_Items_v129/Entities/Items/Drugs/Schisk/Schisk.as",
-		"/C/Users/John/Desktop/resume_john_sherrill.txt",
 		"/C/Users/John/Desktop/timesheet.txt",
 		"/C/Users/John/Desktop/brill/src/shaders/inclusion.vert.glsl",
 		"/C/Users/John/Desktop/brill/src/DepthShell.js",
@@ -831,7 +838,6 @@
 		"/C/Users/John/Desktop/brill/src/shaders/diamond0.frag.glsl",
 		"/C/Users/John/Desktop/brill/public/manifest.json",
 		"/C/Users/John/Desktop/brill/package.json",
-		"/C/Users/John/Desktop/apotheosis/insults.txt",
 		"/C/Users/John/Documents/hs speech.txt",
 		"/C/Users/John/Desktop/cpp/torrential incandescence/chat_replace.txt",
 		"/C/Users/John/Desktop/apotheosis/philosophy.txt",
@@ -865,7 +871,6 @@
 		"/C/Users/John/Desktop/brill/node_modules/three/examples/jsm/controls/OrbitControls.js",
 		"/C/Users/John/Desktop/brill/node_modules/three-orbit-controls/README.md",
 		"/C/Users/John/Desktop/brill/node_modules/three-orbit-controls/index.js",
-		"/C/Users/John/Desktop/apotheosis/moon law.txt",
 		"/C/Users/John/Downloads/Arm_Humanoid.cs",
 		"/C/Users/John/Desktop/brill/node_modules/three/examples/jsm/postprocessing/UnrealBloomPass.js",
 		"/C/Users/John/Desktop/brill/node_modules/three/src/renderers/WebGLMultisampleRenderTarget.js",
@@ -893,12 +898,7 @@
 		"/C/Users/John/Desktop/brill/node_modules/three/examples/jsm/postprocessing/FilmPass.js",
 		"/C/Users/John/Desktop/brill/node_modules/three/examples/jsm/shaders/FilmShader.js",
 		"/C/Users/John/Desktop/brill/node_modules/three/examples/jsm/postprocessing/AfterimagePass.js",
-		"/C/Users/John/Desktop/brill/node_modules/three/examples/jsm/shaders/ToneMapShader.js",
-		"/C/Users/John/Desktop/brill/node_modules/three/examples/jsm/shaders/LuminosityShader.js",
-		"/C/Users/John/Desktop/brill/node_modules/three/examples/jsm/postprocessing/HalftonePass.js",
-		"/C/Users/John/Documents/tempsavcap - Copy.txt",
-		"/C/Users/John/Desktop/master.py",
-		"/C/Program Files (x86)/Steam/steamapps/common/King Arthur's Gold/Mods/TFlippy_TerritoryControl_Structures_v129/Entities/Structures/DrugLab/DrugLab.as"
+		"/C/Users/John/Desktop/brill/node_modules/three/examples/jsm/shaders/ToneMapShader.js"
 	],
 	"find":
 	{
@@ -920,6 +920,22 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"fcf",
+			"copy",
+			"background-color",
+			"tex_",
+			"\\.bind\\(",
+			"sys",
+			"exit",
+			"init",
+			"freq_",
+			"init",
+			"!!",
+			"\\W^",
+			"r_",
+			"init",
+			"    ",
+			"print",
 			"UNITY_MATRIX_VP",
 			"##",
 			"initialize_out",
@@ -1031,23 +1047,7 @@
 			"properties",
 			"_frame",
 			"target",
-			"depthBuffer",
-			"depthbu",
-			"gener",
-			"background",
-			"!!",
-			"scene",
-			"stenci",
-			"camera",
-			"depthsh",
-			"color",
-			"mask",
-			"this\\.",
-			"this",
-			"new Ca",
-			"new cam",
-			"controls",
-			"THREE\\."
+			"depthBuffer"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1064,7 +1064,7 @@
 	},
 	"incremental_find":
 	{
-		"height": 24.0
+		"height": 27.0
 	},
 	"input":
 	{
@@ -1115,7 +1115,7 @@
 	"pinned_build_system": "Packages/Python/Python.sublime-build",
 	"replace":
 	{
-		"height": 44.0
+		"height": 50.0
 	},
 	"save_all_on_build": true,
 	"select_file":

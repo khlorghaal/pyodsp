@@ -1,5 +1,5 @@
-FREQ_MINIMUM= 20#hz
-FREQ_MAXIMUM= 2**13#hz
+from com import *
+import vis
 
 #sounddevice.querydevices()
 device_out= 4
@@ -15,14 +15,11 @@ from scipy.interpolate import splrep,splev
 from scipy.signal import resample,resample_poly
 from scipy.signal.windows import hann
 
-
-
 import time
 import pygame
 import pygame.key
 from pygame.locals import *
 
-import vis
 
 def sample(arr,mul):
 	up=   mul if mul>1. else 1.
@@ -85,12 +82,12 @@ def audio_callback(indata, outdata, frames, time, status):
 	global t0
 
 	t1= t0+float(frames)/sample_rate
-	print(t0-t1)
+	##print(t0-t1)
 	t= linspace(t0, t1, frames, endpoint=False)
 	#print(" "+str(t[0])+" "+str(t[-1]))
 	#print(frames)
 	#print(sample_rate)
-	#inyes= False
+	#inyes= False #this variable has a retarded name so its definitely hack
 	#if inyes:
 		#if indata.shape[1]==2: indata= indata[:,0]+indata[:,1]	#use separate invocations?
 		#a= indata[:,0]
@@ -114,12 +111,17 @@ def audio_callback(indata, outdata, frames, time, status):
 	o= outdata[:,0].view()
 	#outdata[:,1]= o.view()#mirror channels
 
-	#o[:]= sin(t*6.28*300.)
-	o[:]= irfft(freq)[0:o.size]*8
+	o[:]= sin(t*6.28*60.)
+	##o[:]= irfft(freq)[0:o.size]*8
 
 	#o[:]= sign(a)*abs(a*a*a)
 
-	#vis.feed_data(o.copy(),freq.copy())#ownership change!	
+	vis.feed_data(o,freq)
+	#ownership change! copy if mutating past here
+	o= o.copy()
+	#freq= freq.copy()
+
+	o*= 0.
 
 	t0= t1
 	frame+= frames
@@ -130,8 +132,6 @@ def audio_callback(indata, outdata, frames, time, status):
 
 
 
-
-#vis.init(FREQ_MINIMUM, FREQ_MAXIMUM)
 def update():
 	for e in pygame.event.get():
 		if e.type==MOUSEMOTION:
@@ -142,7 +142,7 @@ def update():
 			return False
 		if e.type==KEYDOWN or e.type==KEYUP:
 			keyevent_note(e)
-	#vis.update()
+	vis.update()
 	return True
 
 try:
@@ -159,4 +159,6 @@ try:
 		latency='high',
 		callback=audio_callback):
 			while update(): None;
-except Exception as e: raise e #i dont give a fuck
+except Exception as e: 
+	print("\n")
+	raise e #i dont give a fuck
