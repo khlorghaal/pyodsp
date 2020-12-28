@@ -1,11 +1,25 @@
-from com import *
-import vis
+'''
+stereo wouldnt even work
+	since the audio channels have a nonlinear coupling which cannot be modeled easily
+	maybe later i should say fuckit and see if it gets decent results regardless
+	visualiser also would need to accomodate stereo or warn its displaying mono
 
-#sounddevice.querydevices()
+
+todo
+wtf am doing with visualizer
+	waveform : fft :: immediate raw, multiscale : time-accumulated
+blend accumulation visualizer
+'''
+
+from com import *
+
+import sounddevice as sd
+if DEBUG:
+	print(sounddevice.querydevices())
 device_out= 4
 device_in= 1
 
-import sounddevice as sd
+import vis
 
 from numpy import *
 from numpy.fft import *
@@ -19,6 +33,10 @@ import time
 import pygame
 import pygame.key
 from pygame.locals import *
+
+from math import  pi as PI
+from math import tau as TAU
+
 
 
 def sample(arr,mul):
@@ -59,12 +77,15 @@ def keyevent_note(e):
 		note_state[keymap[e.key]]= int(down)
 
 sample_rate = sd.query_devices(device_in, 'input')['default_samplerate']
-sample_count= fftpack.next_fast_len(int(sample_rate/FREQ_MINIMUM))
-samples= zeros(sample_count)
+fftlen= fftpack.next_fast_len(fftsize_calc(sample_rate))
+#1:1 size of samples:fft
+# otherwise rescaling is required, which is pessimum
+samples= zeros(fftlen)
+fft= zeros(fftlen)
 def push_samples(arr):
 	global samples
 	o= arr.size
-	assert(o<sample_count)
+	assert o<sample_count
 	samples[o:-1]= samples[0:-o-1]
 	samples[0:o]= arr
 	return samples#*hann(sample_count)*800
@@ -73,56 +94,72 @@ def hz_idx(t):
 	return (t*sample_count/sample_rate).astype(int)
 frame= 0
 t0= 0
+last_amp= 0# prevents skipping on dropped frames
 def audio_callback(indata, outdata, frames, time, status):
+	#ASYNC this function is invoked from another thread
+	if DEBUG:
+		print('______update')
 	if status:
-		print(status)
+		print('STATUS');print(status)
+		print('frames');print(frames)
 	global frame
 	global data_p
 	global data_pp
 	global t0
 
-	t1= t0+float(frames)/sample_rate
-	##print(t0-t1)
-	t= linspace(t0, t1, frames, endpoint=False)
-	#print(" "+str(t[0])+" "+str(t[-1]))
-	#print(frames)
-	#print(sample_rate)
-	#inyes= False #this variable has a retarded name so its definitely hack
-	#if inyes:
-		#if indata.shape[1]==2: indata= indata[:,0]+indata[:,1]	#use separate invocations?
-		#a= indata[:,0]
-		#b= push_samples(a)
+	stereo= indata.shape[1]==2
+	if DEBUG:
+		print('note_array.shape '+note_array.shape)
 
-		#amplitude
-		#freq= resample(freq, int(freq.size*2.))
-		#freq= freq[:max(1600,fftsize)] #denoise
-		#freq= fft(freq, n=fftsize)
-		#a= ifft(roll(freq,200.), n=fftsize)
+	o= outdata[:,0].view()
+
+	t1= t0+float(frames)/sample_rate
+	if DEBUG:
+		print('interval '+str(t0-t1))
+
+	#insert after here
+	#DO NOT high latency ops such as allocation, because underflow
+	#all bulk ops should be as o[:]=... to prevent realloc
+
+
+
+
+	o[:]= linspace(t0, t1, frames, endpoint=False)
+	if DEBUG:
+		print('frames '+frames)
+		print('sample_rate '+sample_rate)
+	#b= push_samples(a)
+
+	#amplitude
+	#freq= resample(freq, int(freq.size*2.))
+	#freq= freq[:max(1600,fftsize)] #denoise
+	#freq= fft(freq, n=fftsize)
+	#a= ifft(roll(freq,200.), n=fftsize)
 	##a= irfft(a[::], n=frames) ????
 
 	#frequenz
+	freq= o.copy()
 	#freq= rfft(b)
-	freq= zeros(frames)
+	#freq= zeros(frames)
 
-	#print(note_array.shape)
-	notes= note_state[0]*20
-	#freq[hz_idx(notes)]= 1.
 
-	o= outdata[:,0].view()
-	#outdata[:,1]= o.view()#mirror channels
-
-	o[:]= sin(t*6.28*60.)
+	o[:]= sin(o*TAU*60.)*.1
 	##o[:]= irfft(freq)[0:o.size]*8
 
 	#o[:]= sign(a)*abs(a*a*a)
 
-	vis.feed_data(o,freq)
-	#ownership change! copy if mutating past here
-	o= o.copy()
-	#freq= freq.copy()
+	notes= note_state[0]*20
+	#freq[hz_idx(notes)]= 1.
 
-	o*= 0.
 
+
+
+	if stereo:#chanel mirroring
+		outdata[:,1]= o.copy()
+	vis.fifo.put_nowait((o.copy(),freq.copy()))
+	#copy is unevitable since o==outdata are managed by outer scope
+	#	here was determined to be the appropriate location to copy
+	#	manually buffering would still require a copy
 	t0= t1
 	frame+= frames
 
@@ -155,10 +192,10 @@ try:
 		clip_off=True,
 		dither_off= True,
 		#never_drop_input= True,
-		channels=1,#todo? stereo
+		channels=1,#mono input and output
 		latency='high',
 		callback=audio_callback):
 			while update(): None;
 except Exception as e: 
-	print("\n")
-	raise e #i dont give a fuck
+	print("\nEXCEPT")
+	raise e
