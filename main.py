@@ -27,7 +27,7 @@ import scipy.fftpack as fftpack
 
 from scipy.interpolate import splrep,splev
 from scipy.signal import resample,resample_poly
-from scipy.signal.windows import hann
+from scipy.signal.windows import hann, triang
 
 import time
 import pygame
@@ -112,6 +112,7 @@ def audio_callback(indata, outdata, frames, time, status):
 		print('note_array.shape '+note_array.shape)
 
 	o= outdata[:,0].view()
+	i=  indata[:,0].view()
 
 	t1= t0+float(frames)/sample_rate
 	if DEBUG:
@@ -120,7 +121,8 @@ def audio_callback(indata, outdata, frames, time, status):
 	#insert after here
 	#DO NOT high latency ops such as allocation, because underflow
 	#all bulk ops should be as o[:]=... to prevent realloc
-
+	#todo theres a few copy ops which may or may not need eliminated
+	#i believe double buffering wouldnt aid much
 
 
 
@@ -137,26 +139,58 @@ def audio_callback(indata, outdata, frames, time, status):
 	#a= ifft(roll(freq,200.), n=fftsize)
 	##a= irfft(a[::], n=frames) ????
 
+
 	#frequenz
-	freq= o.copy()
-	#freq= rfft(b)
+	#todo window
+	ifreq= rfft(i)
 	#freq= zeros(frames)
+	visin= (i.copy(),ifreq.copy())
+	#input immutable after here
 
 
-	o[:]= sin(o*TAU*60.)*.1
+	#o[:]= sin(o*TAU*60.)
+	#o[:]= 1
 	##o[:]= irfft(freq)[0:o.size]*8
 
 	#o[:]= sign(a)*abs(a*a*a)
 
-	notes= note_state[0]*20
-	#freq[hz_idx(notes)]= 1.
+	ofreq= zeros(frames//2+1)#size will need changed per window
+	notes= note_state.flatten()
+	notes*= arange(1,1+notes.size)*1
+	notes= notes.astype('int')
+	notes= minimum(notes,ofreq.size-1)#clamp index
+	ofreq[notes]= 1
+	
+	#normalize
+	s= sum(ofreq)
+	if absolute(s)>0.:
+		ofreq*= ofreq.size/s
 
+	#lowpass
+	_lk= 20#half-frequency
+	ofreq*= square(_lk/arange(_lk,_lk+ofreq.size)) # 1 -> lim 0
 
+	o[:]= irfft(ofreq*1j)# *1j does cosine->sine, to taper ends and elim need for windowing
 
+	outmod_postfft= False
+	#are operations applied to the output after assigning it from fft inverse
+	#if so, fft of output must be recalculated after these operations
+	#remember that human hearing is phase-agnostic
+	if outmod_postfft:
+		None
+		ofreq= rfft(o)
+
+	visout= (o.copy(),ofreq.copy())
+	#all transforms after here are not shown on graphs
+
+	#temp window function
+	# has slight low freq emission but prevents all popping
+	#o[:]*= pow( linspace(0,2,o.size)*linspace(2,0,o.size), 2.)
 
 	if stereo:#chanel mirroring
 		outdata[:,1]= o.copy()
-	vis.fifo.put_nowait((o.copy(),freq.copy()))
+
+	vis.fifo.put_nowait((*visin, *visout))
 	#copy is unevitable since o==outdata are managed by outer scope
 	#	here was determined to be the appropriate location to copy
 	#	manually buffering would still require a copy

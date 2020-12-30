@@ -29,7 +29,7 @@ def resize_pad(arr, l):
 
 
 pygame.init()
-resolution = 640,480 #andthussaidtheLourd: 640x480
+resolution = 1920,1080 #andthussaidtheLourd: 640x480
 pygame.display.set_mode(resolution, DOUBLEBUF | OPENGL)
 pygame.display.set_caption('____________________________')
 
@@ -92,8 +92,6 @@ fsq= fsq_gen()
 
 clock = pygame.time.Clock()
 
-from queue import Queue
-fifo= Queue()
 
 frame=0
 
@@ -131,11 +129,18 @@ class linegraph_fifo:
     def push(self, amp_arr):
         #idx 0 most recent
         d= amp_arr.size
+        if d==0: return
         if self.dat.size>amp_arr.size:
-            self.dat[d:]= self.dat[:-1-d]
+            self.dat[d:]= self.dat[:-d]
             self.dat[:d]= amp_arr
         else:
             self.dat= amp_arr[:self.dat.size]
+    def set(self, amp_arr):
+        self.dat= amp_arr
+        w= self.dat.size
+        assert w<=linegraph_fifo.w #over allocation size
+        self.w= self.n= w
+        self.vbao.n= w
 
     def draw(self):
         w= self.w
@@ -149,16 +154,29 @@ class linegraph_fifo:
         self.prog.bind()
         self.vbao.draw()
 
-linegraph_amp0= linegraph_fifo()
+from queue import Queue
+fifo= Queue()# (input amp, input freq, output amp, output freq)
+linegraph_i__amp0= linegraph_fifo()
+linegraph_i_freq0= linegraph_fifo()
+linegraph_o__amp0= linegraph_fifo()
+linegraph_o_freq0= linegraph_fifo()
+linegraphs= [
+    linegraph_i__amp0,
+    linegraph_i_freq0,
+    linegraph_o__amp0,
+    linegraph_o_freq0
+]
 
 def update():
     delta = clock.tick(60)
 
     while not fifo.empty():#CONSUME ALL
-        qp= fifo.get()
-        samples_amp=  qp[0].astype(float32)
-        samples_freq= qp[1].astype(float32)
-        linegraph_amp0.push(samples_amp)
+        for q,g in zip( fifo.get(), linegraphs ):
+            if not isrealobj(q):
+                q= absolute(q).real
+            #g.push(q.astype(float32))
+            g.set(q.astype(float32))
+
     #amplitude capture
     ##print(samples_amp)
     #sample_verts= resize_pad(samples_amp, WMAX)
@@ -182,10 +200,38 @@ def update():
     #frame= (frame+1)%WMAX
 
     #glBindFramebuffer(GL_FRAMEBUFFER, 0)
-    glClearColor(0.0, 0.0, 1.0, 1.0)
+    glClearColor(0.0, 0.0, 0.0, 1.0)
     glClear(GL_COLOR_BUFFER_BIT)
 
-    linegraph_amp0.draw()
+    glEnable(GL_SCISSOR_TEST)
+    def vps(W,H):
+        W= W/2
+        H= H/2
+        w= int(floor(W))
+        h= int(floor(H))
+        W= int(ceil(W))
+        H= int(ceil(H))
+        return [
+            #typing this manually is more readable and writable than permutation
+            [0,0,w,h],#bottom left
+            [0,h,w,H],#top left
+            [w,0,W,h],#bottom right
+            [w,h,W,H] #top right
+        ]
+    viewports= vps(*resolution)
+    #viewportactions= [
+    #    lambda: (glClearColor(1.0, 0.0, 1.0, 1.0), glClear(GL_COLOR_BUFFER_BIT)),
+    #    lambda: (glClearColor(0.0, 0.0, 1.0, 1.0), glClear(GL_COLOR_BUFFER_BIT)),
+    #    lambda: (glClearColor(0.0, 1.0, 0.0, 1.0), glClear(GL_COLOR_BUFFER_BIT)),
+    #    lambda: (glClearColor(0.0, 1.0, 1.0, 1.0), glClear(GL_COLOR_BUFFER_BIT)) 
+    #]
+    for v,l in zip(viewports,linegraphs):
+        glViewport(*v)
+        glScissor(*v)
+        l.draw()
+    glDisable(GL_SCISSOR_TEST)
+    glViewport(0,0,*resolution)
+
     #spectrum
     #fixme texture bindings
     #prog_spec.bind()
