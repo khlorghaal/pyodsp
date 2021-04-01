@@ -29,7 +29,7 @@ def resize_pad(arr, l):
 
 
 pygame.init()
-resolution = 1920,1080 #andthussaidtheLourd: 640x480
+resolution= 1920//2,1080//2 #andthussaidtheLourd: 640x480
 pygame.display.set_mode(resolution, DOUBLEBUF | OPENGL)
 pygame.display.set_caption('____________________________')
 
@@ -98,7 +98,7 @@ frame=0
 class linegraph_fifo:
     #pythonic over gpgpuic
     i= 0
-    w= resolution[0]
+    w= 1024
     prog= prog_vf("""
     layout(location = 0) in vec2 v_p;
     void main(){
@@ -138,9 +138,11 @@ class linegraph_fifo:
     def set(self, amp_arr):
         self.dat= amp_arr
         w= self.dat.size
-        assert w<=linegraph_fifo.w #over allocation size
-        self.w= self.n= w
-        self.vbao.n= w
+        cap= linegraph_fifo.w
+        if w>=cap: #over allocation size
+            self.dat= self.dat[:cap]
+        w= self.dat.size
+        self.w= self.n= self.vbao.n= w
 
     def draw(self):
         w= self.w

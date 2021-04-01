@@ -9,15 +9,38 @@ todo
 wtf am doing with visualizer
 	waveform : fft :: immediate raw, multiscale : time-accumulated
 blend accumulation visualizer
+
+piano
+	timbre modulation
+
+voicemod
+	fractal overlay
+		speed and frequency
 '''
 
 from com import *
 
 import sounddevice as sd
-if DEBUG:
-	print(sounddevice.querydevices())
-device_out= 4
-device_in= 1
+#DEBUG= True
+#if DEBUG:
+sdqd= sd.query_devices()
+print(sdqd)
+
+#(out,in)
+voicemeeter= False
+for s in sdqd:
+	if 'Voicemeeter' in s:
+		voicemeeter= True
+if voicemeeter:
+	sd.default.device= 21 #voicemetter
+	DUPLEX= True
+else:
+	#sd.default.device= (4,1)#normal
+	#sd.default.device= (2,6)#???
+    sd.default.device= (11,11)#linux
+    #DUPLEX= True
+    DUPLEX= False #whether duplex really fucking depends
+    #im not exactly sure what a duplex even is
 
 import vis
 
@@ -76,7 +99,7 @@ def keyevent_note(e):
 	if e.key in keymap:
 		note_state[keymap[e.key]]= int(down)
 
-sample_rate = sd.query_devices(device_in, 'input')['default_samplerate']
+sample_rate = sd.query_devices(sd.default.device if DUPLEX else sd.default.device[0], 'input')['default_samplerate']
 fftlen= fftpack.next_fast_len(fftsize_calc(sample_rate))
 #1:1 size of samples:fft
 # otherwise rescaling is required, which is pessimum
@@ -100,16 +123,16 @@ def audio_callback(indata, outdata, frames, time, status):
 	if DEBUG:
 		print('______update')
 	if status:
-		print('STATUS');print(status)
-		print('frames');print(frames)
+		print('STATUS'+str(status))
+		print('frames'+str(frames))
 	global frame
 	global data_p
 	global data_pp
 	global t0
 
 	stereo= indata.shape[1]==2
-	if DEBUG:
-		print('note_array.shape '+note_array.shape)
+	#if DEBUG:
+		#print('note_array.shape '+note_array.shape)
 
 	o= outdata[:,0].view()
 	i=  indata[:,0].view()
@@ -128,8 +151,8 @@ def audio_callback(indata, outdata, frames, time, status):
 
 	o[:]= linspace(t0, t1, frames, endpoint=False)
 	if DEBUG:
-		print('frames '+frames)
-		print('sample_rate '+sample_rate)
+		print('frames '+str(frames))
+		print('sample_rate '+str(sample_rate))
 	#b= push_samples(a)
 
 	#amplitude
@@ -154,9 +177,10 @@ def audio_callback(indata, outdata, frames, time, status):
 
 	#o[:]= sign(a)*abs(a*a*a)
 
-	ofreq= zeros(frames//2+1)#size will need changed per window
+	ofreq= zeros(frames//2)#size will need changed per window
 	notes= note_state.flatten()
-	notes*= arange(1,1+notes.size)*1
+	notes*= arange(1,1+notes.size)
+	notes= pow(notes,sqrt(2))*.5
 	notes= notes.astype('int')
 	notes= minimum(notes,ofreq.size-1)#clamp index
 	ofreq[notes]= 1
@@ -170,7 +194,8 @@ def audio_callback(indata, outdata, frames, time, status):
 	_lk= 20#half-frequency
 	ofreq*= square(_lk/arange(_lk,_lk+ofreq.size)) # 1 -> lim 0
 
-	o[:]= irfft(ofreq*1j)# *1j does cosine->sine, to taper ends and elim need for windowing
+	o[:]= irfft(ofreq*1j, n=len(o))# *1j does cosine->sine, to taper ends and elim need for windowing
+	#o[0]= 
 
 	outmod_postfft= False
 	#are operations applied to the output after assigning it from fft inverse
@@ -180,10 +205,12 @@ def audio_callback(indata, outdata, frames, time, status):
 		None
 		ofreq= rfft(o)
 
+	#o[:]+= i
 	visout= (o.copy(),ofreq.copy())
 	#all transforms after here are not shown on graphs
 
 	#temp window function
+	#evited by using sine
 	# has slight low freq emission but prevents all popping
 	#o[:]*= pow( linspace(0,2,o.size)*linspace(2,0,o.size), 2.)
 
@@ -205,7 +232,7 @@ def audio_callback(indata, outdata, frames, time, status):
 
 def update():
 	for e in pygame.event.get():
-		if e.type==MOUSEMOTION:
+		if e.type==MOUSEMOTION or e.type==TEXTINPUT:
 			continue
 		print(e)
 		if (e.type == QUIT) or (e.type == KEYUP and e.key == K_ESCAPE):
@@ -217,19 +244,19 @@ def update():
 	return True
 
 try:
-	with sd.Stream(device=
-		(device_in,device_out),
-		#(None,None),
-		#sample_rate=None,
+	with sd.Stream(
+		#samplerate=sample_rate,
+		#samplerate=44000,
 		#blocksize=fftsize,
 		#dtype=None, latency=None,
 		clip_off=True,
 		dither_off= True,
-		#never_drop_input= True,
+		##never_drop_input= True,
 		channels=1,#mono input and output
-		latency='high',
+		#latency='high',
 		callback=audio_callback):
 			while update(): None;
 except Exception as e: 
 	print("\nEXCEPT")
+    #always check if devices are configured via sd.default.device
 	raise e
