@@ -37,10 +37,9 @@ if voicemeeter:
 else:
 	#sd.default.device= (4,1)#normal
 	#sd.default.device= (2,6)#???
-    sd.default.device= (11,11)#linux
-    #DUPLEX= True
-    DUPLEX= False #whether duplex really fucking depends
-    #im not exactly sure what a duplex even is
+    sd.default.device= (12,12)#linux
+    DUPLEX= True
+    #DUPLEX= False #whether duplex really fucking depends
 
 import vis
 
@@ -87,17 +86,36 @@ note_keys= array([
 		[K_a, K_s, K_d, K_f, K_g, K_h, K_j, K_k, K_l, K_SEMICOLON],
 		[K_z, K_x, K_c, K_v, K_b, K_n, K_m, K_COMMA,  K_PERIOD, K_SLASH]
 	])
+fret_scancodes= array([
+		[95,96,97],
+		[92,93,94],
+		[89,90,91],
+		[98,99,88]
+	])
 note_state= zeros(note_keys.shape)
+fret_state= zeros(fret_scancodes.shape)
 
 keymap={}#keycode -> 2d position
 for i,row in enumerate(note_keys):
-	for j,a in enumerate(row):
+	for j,a in enumerate(row):#a is content of map-cell
 		keymap[a]= (i,j)
+fretmap={}#scancode -> 2d position
+for i,row in enumerate(fret_scancodes):
+	for j,a in enumerate(row):
+		fretmap[a]= (i,j)
 
 def keyevent_note(e):
 	down= e.type==KEYDOWN
-	if e.key in keymap:
+	#assert( e.key in keymap != e.scancode in fretmap)
+	print(e.key)
+	if e.key<9000 and e.key in keymap:#numpad keys have very large keycodes; huge fucking hack
 		note_state[keymap[e.key]]= int(down)
+	elif e.scancode in fretmap:
+		fret_state[fretmap[e.scancode]]= int(down)
+	else:
+		None#unmapped key
+
+
 
 sample_rate = sd.query_devices(sd.default.device if DUPLEX else sd.default.device[0], 'input')['default_samplerate']
 fftlen= fftpack.next_fast_len(fftsize_calc(sample_rate))
@@ -179,8 +197,9 @@ def audio_callback(indata, outdata, frames, time, status):
 
 	ofreq= zeros(frames//2)#size will need changed per window
 	notes= note_state.flatten()
+	notes[:size(fret_state)]+= fret_state.flatten()
 	notes*= arange(1,1+notes.size)
-	notes= pow(notes,sqrt(2))*.5
+	notes= notes*2.
 	notes= notes.astype('int')
 	notes= minimum(notes,ofreq.size-1)#clamp index
 	ofreq[notes]= 1
@@ -191,10 +210,14 @@ def audio_callback(indata, outdata, frames, time, status):
 		ofreq*= ofreq.size/s
 
 	#lowpass
-	_lk= 20#half-frequency
+	_lk= 10#half-frequency
 	ofreq*= square(_lk/arange(_lk,_lk+ofreq.size)) # 1 -> lim 0
 
 	o[:]= irfft(ofreq*1j, n=len(o))# *1j does cosine->sine, to taper ends and elim need for windowing
+	
+	MIXMIC= False
+	if MIXMIC:
+		o[:]+= i
 	#o[0]= 
 
 	outmod_postfft= False
@@ -207,7 +230,7 @@ def audio_callback(indata, outdata, frames, time, status):
 
 	#o[:]+= i
 	visout= (o.copy(),ofreq.copy())
-	#all transforms after here are not shown on graphs
+	#transforms after here are not shown on graphs
 
 	#temp window function
 	#evited by using sine
@@ -246,8 +269,9 @@ def update():
 try:
 	with sd.Stream(
 		#samplerate=sample_rate,
-		#samplerate=44000,
+		samplerate=44000,
 		#blocksize=fftsize,
+		blocksize=2048,
 		#dtype=None, latency=None,
 		clip_off=True,
 		dither_off= True,
