@@ -15,15 +15,15 @@ voicemeeter= False
 for s in sdqd:
 	if 'Voicemeeter' in s:
 		voicemeeter= True
-if voicemeeter:
-	sd.default.device= 21 #voicemetter
-	DUPLEX= True
-else:
-	#sd.default.device= (4,1)#normal
-	#sd.default.device= (2,6)#???
-    sd.default.device= (12,12)#linux
-    DUPLEX= True
-    #DUPLEX= False #whether duplex really fucking depends
+		#todo fix
+		#todo is voicemeeter even necessary to output to programs requiring default mic?
+for (i,s) in enumerate(sdqd):
+	if 'default' in s:
+		sd.default.device= (i,i)
+
+DUPLEX= True
+#todo i keep forgetting what the fuck is a duplex
+#just guess until it works
 
 #must be pure function, as async
 from enum import Enum
@@ -44,6 +44,7 @@ from numpy import *
 from numpy.fft import *
 import scipy.fftpack as fftpack
 sample_rate = sd.query_devices(sd.default.device if DUPLEX else sd.default.device[0], 'input')['default_samplerate']
+sample_rate= 44000 #!!
 #fftlen= fftpack.next_fast_len(fftsize_calc(sample_rate))
 #1:1 size of samples:fft
 # otherwise rescaling is required, which is pessimum
@@ -78,12 +79,20 @@ def audio_callback(indata, outdata, frames, time, status):
 	#if DEBUG:
 		#print('note_array.shape '+note_array.shape)
 
-	in_amp=   indata[:,0].view()
+	in_amp=   indata[:,0].view()*0#!!
+	if fin.instance!=None:
+		b= fin.instance.buf
+		print(b)
+		end= frame+frames
+		if end<b.size:
+			in_amp+= b[frame:end]
+			#todo rate resampling
 	in_fft= rfft(in_amp)
 	out_amp= outdata[:,0].view()
-	out_frq= zeros(frames//2,dtype=complex64)
+	out_frq= zeros(frames//2+1,dtype=complex64)
 
-	t1= t0+float(frames)/sample_rate
+	t1= t0+float(frames)
+	rate= sample_rate
 	if DEBUG:
 		print('interval '+str(t0-t1))
 
@@ -110,16 +119,18 @@ def audio_callback(indata, outdata, frames, time, status):
 	_op= audio_op.instance
 	do_rfft= False #delaying allows postprocess
 	def _AMP_OUT():
-		out_amp[:]= _op.f( zeros(frames) )
+		out_amp[:]= _op.f( rate, linspace(t0,t1,frames,endpoint=False) )
 		out_frq[:]= rfft(out_amp)
 	def _AMP_INOUT():
-		out_amp[:]= _op.f( in_amp )
+		out_amp[:]= _op.f( rate, in_amp )
 		out_frq[:]= rfft(out_amp)
 	def _FFT_OUT():
-		out_frq[:]= _op.f( zeros(frames) )
+		out_frq[:]= _op.f( rate, zeros(frames//2+1) )
+		nonlocal do_rfft
 		do_rfft= True
 	def _FFT_INOUT():
-		out_frq[:]= _op.f( in_fft )
+		out_frq[:]= _op.f( rate, in_fft )
+		nonlocal do_rfft
 		do_rfft= True
 	{
 		audio_op.arity.AMP_OUT: _AMP_OUT,
@@ -129,20 +140,20 @@ def audio_callback(indata, outdata, frames, time, status):
 	}[_op.arity]()
 
 
-	visout= (out_amp.copy(),out_frq.copy())
-		#transforms after here are not shown on graphs
-
 	#temp window function
 	#evited by using sine
 	# has slight low freq emission but prevents all popping
 	#o[:]*= pow( linspace(0,2,o.size)*linspace(2,0,o.size), 2.)
+	if do_rfft:
+		#lowpass
+		_lk= 64#half-frequency, reciprocal
+		out_frq*= square(_lk/arange(_lk,_lk+out_frq.size)) # 1 -> lim 0
+		out_amp[:]= irfft(out_frq*1j, n=len(out_amp))
+			# *1j does cosine->sine, to taper ends and mostly elim need for windowing
+			#todo n should not need specified
 
-	#lowpass
-	_lk= 10#half-frequency, as in exponential, same as half-life
-	out_frq*= square(_lk/arange(_lk,_lk+out_frq.size)) # 1 -> lim 0
-	out_amp[:]= irfft(out_frq*1j, n=len(out_amp))
-		# *1j does cosine->sine, to taper ends and mostly elim need for windowing
-
+	visout= (out_amp.copy(),out_frq.copy())
+	#transforms after here are not shown on graphs
 
 	MIXMIC= False
 	if MIXMIC:
@@ -155,19 +166,54 @@ def audio_callback(indata, outdata, frames, time, status):
 	#copy is unevitable since o==outdata are managed by outer scope
 	#	here was determined to be the appropriate location to copy
 	#	manually buffering would still require a copy
+	#todo i dispute my previous self on this matter and think i can do better
 	t0= t1
 	frame+= frames
 
 
+#from pprint import pprint
+#pprint(vars())
+
+import soundfile
+class fout:
+	instance= None
+	def __init__(self,file):
+		fout.instance= self
+		self.file= file
+		self.buf= sin(linspace(0,60,4200))
+	def flush(self):
+		print('saving')
+		soundfile.write(self.file,self.buf,sample_rate)
+		#todo
+class fin:
+	instance= None
+	def __init__(self, file):
+		fin.instance= self
+		self.buf= soundfile.read(file)[0]
+		print('soundfile loaded %s'%file)
+		print(self.buf)
+
+def quit():
+	if fout.instance!=None:
+		print('saving %s'%fout.instance.file)
+		outfile.instance.flush()
 
 #parameters are for different threads
 #dont let them fuck with eachother
-def invoke(update_main, update_audio):
+def invoke(update_main,update_audio, infile=None,outfile=None):
+	if infile!=None:
+		if audio_op.arity is audio_op.arity.AMP_OUT:
+			raise 'file input provided to function which does not take input audio'
+		else:
+			None
+	if infile!=None:
+		fin(infile)
+	if outfile!=None:
+		fout(outfile)
 	audio_op.instance= update_audio
 	try:
 		with sd.Stream(
-			#samplerate=sample_rate,
-			samplerate=44000,
+			samplerate=sample_rate,
 			#blocksize=fftsize,
 			blocksize=2048,
 			#dtype=None, latency=None,

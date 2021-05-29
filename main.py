@@ -42,18 +42,6 @@ from math import tau as TAU
 
 
 
-import pyogg
-def fileplay(filename):
-	file= oggload(filename)
-#start recording buffer
-def clipstart(): None
-#flush record buffer to file
-def clipend(): None
-#play the most recent recording
-def clipplay(): None
-
-
-
 def sample(arr,mul):
 	up=   mul if mul>1. else 1.
 	down= 1.  if mul>1. else 1./mul
@@ -110,8 +98,8 @@ def keyevent_note(e):
 
 from sd_wrap import audio_op
 
-def _piano(in_):
-	ofreq= zeros(in_.size//2)#size will need changed per window
+def _piano(rate,in_):
+	ofreq= in_
 	notes= note_state.flatten()
 	notes[:size(fret_state)]+= fret_state.flatten()
 	notes*= arange(1,1+notes.size)
@@ -126,23 +114,38 @@ def _piano(in_):
 	return ofreq
 piano= audio_op(audio_op.arity.FFT_OUT,_piano)
 
-def _basic():
-	return sin(o*TAU*60.)
+def _synth0(rate,in_):
+	return sin(in_*TAU*60./rate)
 		#1
 		#irfft(freq)[0:o.size]*8
 		#sign(a)*abs(a*a*a)
-basic= audio_op(audio_op.arity.AMP_OUT, _basic)
+basic= audio_op(audio_op.arity.AMP_OUT, _synth0)
 
-def _voice():
-	None
+def _synth1(rate,f):
+	f[2]= 1.
+	print(f)
+	return f
+synth1= audio_op(audio_op.arity.FFT_OUT, _synth1)
+
+def _voice(rate,in_):
+	return in_*1
+	#todo
 voice= audio_op(audio_op.arity.FFT_INOUT, _voice)
 
+undefined_AMP= audio_op(audio_op.arity.AMP_OUT, lambda rate,in_: None)
+undefined_FFT= audio_op(audio_op.arity.FFT_OUT, lambda rate,in_: None)
 
 
 
 
+#audio_op= piano
+#audio_op= synth0
+#audio_op= synth1
+audio_op= voice
+#audio_op= undefined_AMP
 
-audio_op= piano
+infile= 'voice0.flac'
+outfile= 'ses.flac'
 
 
 def update_main():
@@ -151,10 +154,12 @@ def update_main():
 			continue
 		print(e)
 		if (e.type == QUIT) or (e.type == KEYUP and e.key == K_ESCAPE):
+			sd_wrap.quit()
 			pygame.quit()
 			return False
 		if e.type==KEYDOWN or e.type==KEYUP:
 			keyevent_note(e)
 	vis.update()
 	return True
-sd_wrap.invoke(update_main,audio_op)
+
+sd_wrap.invoke(update_main,audio_op,infile,outfile)
