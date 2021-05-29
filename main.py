@@ -20,7 +20,7 @@ voicemod
 
 from com import *
 
-import sd_wrap
+import internal
 import vis
 
 
@@ -96,7 +96,7 @@ def keyevent_note(e):
 	else:
 		None#unmapped key
 
-from sd_wrap import audio_op
+from internal import audio_op
 
 def _piano(rate,in_):
 	ofreq= in_
@@ -154,7 +154,7 @@ def update_main():
 			continue
 		print(e)
 		if (e.type == QUIT) or (e.type == KEYUP and e.key == K_ESCAPE):
-			sd_wrap.quit()
+			internal.quit()
 			pygame.quit()
 			return False
 		if e.type==KEYDOWN or e.type==KEYUP:
@@ -162,4 +162,4 @@ def update_main():
 	vis.update()
 	return True
 
-sd_wrap.invoke(update_main,audio_op,infile,outfile)
+internal.invoke(update_main,audio_op,infile,outfile)

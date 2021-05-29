@@ -44,7 +44,8 @@ from numpy import *
 from numpy.fft import *
 import scipy.fftpack as fftpack
 sample_rate = sd.query_devices(sd.default.device if DUPLEX else sd.default.device[0], 'input')['default_samplerate']
-sample_rate= 44000 #!!
+#sample_rate= 44000
+
 #fftlen= fftpack.next_fast_len(fftsize_calc(sample_rate))
 #1:1 size of samples:fft
 # otherwise rescaling is required, which is pessimum
@@ -82,7 +83,6 @@ def audio_callback(indata, outdata, frames, time, status):
 	in_amp=   indata[:,0].view()*0#!!
 	if fin.instance!=None:
 		b= fin.instance.buf
-		print(b)
 		end= frame+frames
 		if end<b.size:
 			in_amp+= b[frame:end]
@@ -146,7 +146,7 @@ def audio_callback(indata, outdata, frames, time, status):
 	#o[:]*= pow( linspace(0,2,o.size)*linspace(2,0,o.size), 2.)
 	if do_rfft:
 		#lowpass
-		_lk= 64#half-frequency, reciprocal
+		_lk= 200#half-frequency, reciprocal
 		out_frq*= square(_lk/arange(_lk,_lk+out_frq.size)) # 1 -> lim 0
 		out_amp[:]= irfft(out_frq*1j, n=len(out_amp))
 			# *1j does cosine->sine, to taper ends and mostly elim need for windowing
@@ -166,7 +166,12 @@ def audio_callback(indata, outdata, frames, time, status):
 	#copy is unevitable since o==outdata are managed by outer scope
 	#	here was determined to be the appropriate location to copy
 	#	manually buffering would still require a copy
-	#todo i dispute my previous self on this matter and think i can do better
+	#todo i dispute my previous self and think i can do better
+
+	if fout.instance!=None:
+		fout.instance.buf.append(out_amp.copy())
+		print(fout.instance.buf)
+
 	t0= t1
 	frame+= frames
 
@@ -178,25 +183,26 @@ import soundfile
 class fout:
 	instance= None
 	def __init__(self,file):
-		fout.instance= self
 		self.file= file
-		self.buf= sin(linspace(0,60,4200))
+		self.buf= []
+		fout.instance= self
 	def flush(self):
-		print('saving')
-		soundfile.write(self.file,self.buf,sample_rate)
-		#todo
+		print('saving %s'%self.file)
+		buf= array(self.buf).flatten()
+		print(buf)
+		#fixme stereo flattens wrong
+		soundfile.write(self.file,buf,int(sample_rate))
 class fin:
 	instance= None
 	def __init__(self, file):
-		fin.instance= self
 		self.buf= soundfile.read(file)[0]
 		print('soundfile loaded %s'%file)
 		print(self.buf)
+		fin.instance= self
 
 def quit():
 	if fout.instance!=None:
-		print('saving %s'%fout.instance.file)
-		outfile.instance.flush()
+		fout.instance.flush()
 
 #parameters are for different threads
 #dont let them fuck with eachother
