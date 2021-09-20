@@ -128,12 +128,38 @@ def _synth1(rate,f):
 synth1= audio_op(audio_op.arity.FFT_OUT, _synth1)
 
 def _voice(rate,in_):
-	return in_*1
+	#in_[-200::-1]= 0
+	#return roll(in_,20)
+	s= in_.size
+	#f= 200
+	#r= 2#int((s+f)/s)
+	#b= (s//r)+1
+	#in_[:b]= in_[::r]
+	#in_[:b]= 0
+
+	#in_= roll(in_,90)
+
+	#f= int(sqrt(sin(in_[0]/600*TAU))*200)
+	#in_= roll(in_,f)
+
+	#in_= roll(in_,-30) + roll(in_,-20) + roll(in_,20)*.5 + roll(in_,30)*.25
+	#in_/= 3
+
+	f= lambda i: roll(in_)
+	in_= gather([ f(i) for i in [] ])
+
+	#low
+	#in_[:s//2+1]= in_[::2]
+
+	#high
+	in_[:]= in_[::2]
+
+	return in_
 	#todo
 voice= audio_op(audio_op.arity.FFT_INOUT, _voice)
 
-undefined_AMP= audio_op(audio_op.arity.AMP_OUT, lambda rate,in_: None)
-undefined_FFT= audio_op(audio_op.arity.FFT_OUT, lambda rate,in_: None)
+undefined_AMP= audio_op(audio_op.arity.AMP_OUT, lambda _,__: None)
+undefined_FFT= audio_op(audio_op.arity.FFT_OUT, lambda _,__: None)
 
 
 
@@ -145,7 +171,7 @@ audio_op= voice
 #audio_op= undefined_AMP
 
 infile= 'voice0.flac'
-outfile= 'ses.flac'
+outfile= None#'ses.flac'
 
 
 def update_main():

@@ -80,7 +80,7 @@ def audio_callback(indata, outdata, frames, time, status):
 	#if DEBUG:
 		#print('note_array.shape '+note_array.shape)
 
-	in_amp=   indata[:,0].view()*0#!!
+	in_amp= indata[:,0].view()
 	if fin.instance!=None:
 		b= fin.instance.buf
 		end= frame+frames
@@ -148,16 +148,13 @@ def audio_callback(indata, outdata, frames, time, status):
 		#lowpass
 		_lk= 200#half-frequency, reciprocal
 		out_frq*= square(_lk/arange(_lk,_lk+out_frq.size)) # 1 -> lim 0
-		out_amp[:]= irfft(out_frq*1j, n=len(out_amp))
+		out_amp[:]= irfft(out_frq, n=len(out_amp))
+		#out_amp[:]= irfft(out_frq*1j, n=len(out_amp))
 			# *1j does cosine->sine, to taper ends and mostly elim need for windowing
 			#todo n should not need specified
 
 	visout= (out_amp.copy(),out_frq.copy())
 	#transforms after here are not shown on graphs
-
-	MIXMIC= False
-	if MIXMIC:
-		out_amp[:]+= in_amp
 
 	if stereo:#chanel mirroring
 		outdata[:,1]= outdata[:,0]
@@ -170,7 +167,6 @@ def audio_callback(indata, outdata, frames, time, status):
 
 	if fout.instance!=None:
 		fout.instance.buf.append(out_amp.copy())
-		print(fout.instance.buf)
 
 	t0= t1
 	frame+= frames
