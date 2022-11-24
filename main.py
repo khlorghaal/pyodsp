@@ -96,9 +96,14 @@ def keyevent_note(e):
 	else:
 		None#unmapped key
 
-from internal import audio_op
 
-def _piano(rate,in_):
+
+
+from internal import audio_op
+from internal import arity
+
+@audio_op(arity.FFT_OUT)
+def piano(rate,in_):
 	ofreq= in_
 	notes= note_state.flatten()
 	notes[:size(fret_state)]+= fret_state.flatten()
@@ -112,22 +117,22 @@ def _piano(rate,in_):
 	if absolute(s)>0.:
 		ofreq*= ofreq.size/s
 	return ofreq
-piano= audio_op(audio_op.arity.FFT_OUT,_piano)
 
-def _synth0(rate,in_):
+@audio_op(arity.AMP_OUT)
+def synth0(rate,in_):
 	return sin(in_*TAU*60./rate)
 		#1
 		#irfft(freq)[0:o.size]*8
 		#sign(a)*abs(a*a*a)
-basic= audio_op(audio_op.arity.AMP_OUT, _synth0)
 
-def _synth1(rate,f):
+@audio_op(arity.FFT_OUT)
+def synth1(rate,f):
 	f[2]= 1.
 	print(f)
 	return f
-synth1= audio_op(audio_op.arity.FFT_OUT, _synth1)
 
-def _voice(rate,in_):
+@audio_op(arity.FFT_INOUT)
+def voice(rate,in_):
 	#in_[-200::-1]= 0
 	#return roll(in_,20)
 	s= in_.size
@@ -145,36 +150,28 @@ def _voice(rate,in_):
 	#in_= roll(in_,-30) + roll(in_,-20) + roll(in_,20)*.5 + roll(in_,30)*.25
 	#in_/= 3
 
-	f= lambda i: roll(in_)
-	in_= gather([ f(i) for i in [] ])
+	#f= lambda i: roll(in_)
+	#in_= gather([ f(i) for i in [] ])
 
 	#low
 	#in_[:s//2+1]= in_[::2]
 
 	#high
-	in_[:]= in_[::2]
+	##in_[:]= in_[::2]*.01
 
 	return in_
-	#todo
-voice= audio_op(audio_op.arity.FFT_INOUT, _voice)
-
-undefined_AMP= audio_op(audio_op.arity.AMP_OUT, lambda _,__: None)
-undefined_FFT= audio_op(audio_op.arity.FFT_OUT, lambda _,__: None)
-
-
-
 
 #audio_op= piano
 #audio_op= synth0
 #audio_op= synth1
 audio_op= voice
-#audio_op= undefined_AMP
 
 infile= 'voice0.flac'
 outfile= None#'ses.flac'
 
 
-def update_main():
+internal.invoke(audio_op,infile,outfile)
+while True:
 	for e in pygame.event.get():
 		if e.type==MOUSEMOTION or e.type==TEXTINPUT:
 			continue
@@ -182,10 +179,9 @@ def update_main():
 		if (e.type == QUIT) or (e.type == KEYUP and e.key == K_ESCAPE):
 			internal.quit()
 			pygame.quit()
-			return False
+			break
 		if e.type==KEYDOWN or e.type==KEYUP:
 			keyevent_note(e)
 	vis.update()
-	return True
-
-internal.invoke(update_main,audio_op,infile,outfile)
+vis.quit()
+internal.quit()

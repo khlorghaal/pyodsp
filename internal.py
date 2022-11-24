@@ -1,6 +1,6 @@
 #handles audio config, buffers
 #provides a bit more function than just sounddevice
-#while hiding common stuff like sample rate
+#while hiding common stuff like sample rate and window
 
 from com import *
 import vis
@@ -12,6 +12,7 @@ print(sdqd)
 
 #(out,in)
 voicemeeter= False
+#only useful for programs that cant rebind mic
 for s in sdqd:
 	if 'Voicemeeter' in s:
 		voicemeeter= True
@@ -27,17 +28,17 @@ DUPLEX= True
 
 #must be pure function, as async
 from enum import Enum
-class audio_op:
-	instance= None
-	class arity(Enum):
-		AMP_OUT=1
-		AMP_INOUT=2
-		FFT_OUT=3
-		FFT_INOUT=4
-	#[sig sd_wrap.audio_op; bool ]
-	def __init__(self,arity,f):#todo does meta-fft also require windowing?
-		self.arity= arity
-		self.f=     f
+class arity(Enum):
+	AMP_OUT=1
+	AMP_INOUT=2
+	FFT_OUT=3
+	FFT_INOUT=4
+@dcls
+class aop_t:
+	f: callable
+	arity:arity
+audio_op= lambda arity: lambda f: aop_t(f,arity)
+audio_op_aktiv= None
 
 from numpy import complex64
 from numpy import *
@@ -116,7 +117,7 @@ def audio_callback(indata, outdata, frames, time, status):
 	visin= (in_amp.copy(),in_fft.copy())
 
 
-	_op= audio_op.instance
+	_op= audio_op_aktiv
 	do_rfft= False #delaying allows postprocess
 	def _AMP_OUT():
 		out_amp[:]= _op.f( rate, linspace(t0,t1,frames,endpoint=False) )
@@ -133,10 +134,10 @@ def audio_callback(indata, outdata, frames, time, status):
 		nonlocal do_rfft
 		do_rfft= True
 	{
-		audio_op.arity.AMP_OUT: _AMP_OUT,
-		audio_op.arity.AMP_INOUT: _AMP_INOUT,
-		audio_op.arity.FFT_OUT: _FFT_OUT,
-		audio_op.arity.FFT_INOUT: _FFT_INOUT,
+		arity.AMP_OUT:   _AMP_OUT,
+		arity.AMP_INOUT: _AMP_INOUT,
+		arity.FFT_OUT:   _FFT_OUT,
+		arity.FFT_INOUT: _FFT_INOUT,
 	}[_op.arity]()
 
 
@@ -196,15 +197,23 @@ class fin:
 		print(self.buf)
 		fin.instance= self
 
+aktiv= True
 def quit():
+	aktiv= False
 	if fout.instance!=None:
 		fout.instance.flush()
 
+import threading
+import time
+
 #parameters are for different threads
 #dont let them fuck with eachother
-def invoke(update_main,update_audio, infile=None,outfile=None):
+def invoke(op, infile=None,outfile=None):
+	global audio_op_aktiv
+	audio_op_aktiv= op
+
 	if infile!=None:
-		if audio_op.arity is audio_op.arity.AMP_OUT:
+		if op.arity in (arity.AMP_OUT,arity.FFT_OUT):
 			raise 'file input provided to function which does not take input audio'
 		else:
 			None
@@ -212,9 +221,9 @@ def invoke(update_main,update_audio, infile=None,outfile=None):
 		fin(infile)
 	if outfile!=None:
 		fout(outfile)
-	audio_op.instance= update_audio
+
 	try:
-		with sd.Stream(
+		strem= lambda: sd.Stream(
 			samplerate=sample_rate,
 			#blocksize=fftsize,
 			blocksize=2048,
@@ -224,8 +233,13 @@ def invoke(update_main,update_audio, infile=None,outfile=None):
 			##never_drop_input= True,
 			channels=1,#mono input and output
 			#latency='high',
-			callback= audio_callback):
-				while update_main(): None;
+			callback= audio_callback)
+		#sounddevice's control flow is fucked, ergo dummy thread
+		def thr():
+			with strem():
+				while aktiv:
+					time.sleep(1.);
+		threading.Thread(name='sounddevice dummy',target=thr).run()
 	except Exception as e: 
 		print("\nEXCEPT")
 	    #always check if devices are configured via sd.default.device
