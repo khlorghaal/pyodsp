@@ -159,7 +159,7 @@ def voice(rate,in_):
 	#high
 	##in_[:]= in_[::2]*.01
 
-	return in_
+	return in_*.2
 
 #audio_op= piano
 #audio_op= synth0
@@ -167,7 +167,7 @@ def voice(rate,in_):
 audio_op= voice
 
 infile= 'voice0.flac'
-outfile= None#'ses.flac'
+outfile= 'ses.flac'
 
 
 internal.invoke(audio_op,infile,outfile)
@@ -175,13 +175,13 @@ while True:
 	for e in pygame.event.get():
 		if e.type==MOUSEMOTION or e.type==TEXTINPUT:
 			continue
-		print(e)
+		#print(e)
+		if e.type==KEYDOWN or e.type==KEYUP:
+			keyevent_note(e)
 		if (e.type == QUIT) or (e.type == KEYUP and e.key == K_ESCAPE):
 			internal.quit()
 			pygame.quit()
 			break
-		if e.type==KEYDOWN or e.type==KEYUP:
-			keyevent_note(e)
 	vis.update()
 vis.quit()
 internal.quit()

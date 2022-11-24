@@ -173,8 +173,6 @@ def audio_callback(indata, outdata, frames, time, status):
 	frame+= frames
 
 
-#from pprint import pprint
-#pprint(vars())
 
 import soundfile
 class fout:
@@ -197,11 +195,14 @@ class fin:
 		print(self.buf)
 		fin.instance= self
 
+
 aktiv= True
 def quit():
+	global aktiv
 	aktiv= False
 	if fout.instance!=None:
 		fout.instance.flush()
+
 
 import threading
 import time
@@ -222,25 +223,26 @@ def invoke(op, infile=None,outfile=None):
 	if outfile!=None:
 		fout(outfile)
 
-	try:
-		strem= lambda: sd.Stream(
-			samplerate=sample_rate,
-			#blocksize=fftsize,
-			blocksize=2048,
-			#dtype=None, latency=None,
-			clip_off=True,
-			dither_off= True,
-			##never_drop_input= True,
-			channels=1,#mono input and output
-			#latency='high',
-			callback= audio_callback)
-		#sounddevice's control flow is fucked, ergo dummy thread
-		def thr():
+	#sounddevice's control flow is fucked, ergo dummy thread
+	strem= lambda: sd.Stream(
+		samplerate=sample_rate,
+		#blocksize=fftsize,
+		blocksize=2048,
+		#dtype=None, latency=None,
+		clip_off=True,
+		dither_off= True,
+		##never_drop_input= True,
+		channels=1,#mono input and output
+		#latency='high',
+		callback= audio_callback)
+	def thr():
+		try:
 			with strem():
 				while aktiv:
 					time.sleep(1.);
-		threading.Thread(name='sounddevice dummy',target=thr).run()
-	except Exception as e: 
-		print("\nEXCEPT")
-	    #always check if devices are configured via sd.default.device
-		raise e
+		except Exception as e: 
+			print("\nEXCEPT")
+		    #always check if devices are configured via sd.default.device
+			raise e
+			
+	threading.Thread(name='sounddevice dummy',target=thr).start()
